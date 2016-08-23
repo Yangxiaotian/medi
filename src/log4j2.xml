@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="OFF">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<!-- <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" /> -->
+			<!-- <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %C.%M(l:%L) %m%n" /> -->
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger(line:%L) %m%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+
+		<Root level="debug">
+			<appenderRef ref="Console" />
+		</Root>
+		
+		<Logger name="org.apache.ibatis.logging" level="info" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger name="org.mybatis.spring" level="info" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger name="org.springframework" level="warn" additivity="false">
+			<appenderRef ref="Console"/>
+		</Logger>
+		<Logger name="log4j.logger.java.sql.Connection" level="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger name="log4j.logger.java.sql.PreparedStatement" level="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+ 		<Logger name="BMCC" level="false" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		
+ 		
+	</Loggers>
+</Configuration>

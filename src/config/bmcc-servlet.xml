@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-4.0.xsd
+        http://www.springframework.org/schema/websocket 
+        http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+
+	<!-- 当发布之后另外的工程可以这样访问静态资源文件 -->
+	<mvc:resources mapping="static/ext-5.1.0/**" location="classpath:static/ext-5.1.0/"/>
+	<mvc:resources mapping="static/ext-6.0.1/**" location="classpath:static/ext-6.0.1/"/>
+	<mvc:resources mapping="static/bmc/**" location="classpath:static/bmc/" />
+	<mvc:resources mapping="static/bmc-mobi/**" location="classpath:static/bmc-mobi/"/>
+	<mvc:default-servlet-handler />
+	
+	<context:property-placeholder location="classpath:config/jdbc.properties" />
+
+	<!--自动扫描该包下所有的组件,根据标注处理 -->
+	<!-- enable autowire -->
+	<context:annotation-config />
+	<context:component-scan base-package="com.enjoyun.bmc;com.medi" />
+
+	<mvc:annotation-driven>
+		<!-- Date格式转换 -->
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+				<property name="objectMapper" ref="customObjectMapper"></property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	
+	<!-- 开启定时器 -->
+	<task:annotation-driven />
+
+	<!-- 用apache的datasource -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close" p:driverClassName="${jdbc.driverClassName}"
+		p:url="${jdbc.databaseurl}" p:username="${jdbc.username}" p:password="${jdbc.password}">
+		<property name="maxWaitMillis">
+			<value>${jdbc.maxWait}</value>
+		</property>
+		<property name="maxIdle">
+			<value>${jdbc.maxIdle}</value>
+		</property>
+		<property name="minIdle">
+			<value>${jdbc.minIdle}</value>
+		</property>
+		<!-- 只要下面两个参数设置成小于8小时(MySql默认)，就能避免MySql的8小时自动断开连接问题 -->
+		<property name="timeBetweenEvictionRunsMillis">
+			<value>18000000</value>
+		</property><!-- 5小时 -->
+		<property name="minEvictableIdleTimeMillis">
+			<value>10800000</value>
+		</property><!-- 3小时 -->
+	</bean>
+	<!-- define the SqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="" />
+		<!-- 可以单独指定mybatis的配置文件，或者写在本文件里面。 用下面的自动扫描装配(推荐)或者单独mapper -->
+		<!-- <property name="configLocation" value="classpath:config/mybatis-config.xml" /> -->
+	</bean>
+
+	<!-- 自动扫描并组装MyBatis的映射文件和接口 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.enjoyun.bmc.**.dao;com.medi.**.dao" />
+	</bean>
+
+	<!-- enable transaction demarcation with annotations -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- set the max upload size100MB -->
+		<property name="maxUploadSize">
+			<value>304857600</value>
+		</property>
+		<property name="maxInMemorySize">
+			<value>4096</value>
+		</property>
+	</bean>
+	<bean id="processEngineConfiguration"
+		class="org.activiti.spring.SpringProcessEngineConfiguration">
+			<property name="dataSource" ref="dataSource" />
+			<property name="transactionManager" ref="transactionManager" />
+			<property name="databaseSchemaUpdate" value="true" />
+			<property name="jobExecutorActivate" value="false" />
+			<property name="deploymentResources"
+	value="classpath*:/**/autodeployment/*.bpmn20.xml" />
+		<property name="deploymentMode" value="single-resources" />
+	    
+	</bean>
+	<bean id="processEngine"
+	class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration"
+	ref="processEngineConfiguration" />
+	</bean>
+	<bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+	<bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+	<bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+	<bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+	<bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+</beans>

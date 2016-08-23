@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/assembly-1.0.0.xsd">
+	<id>package</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<fileSet>
+			<directory>WebContent/WEB-INF/classes</directory>
+			<outputDirectory>/</outputDirectory>
+			<excludes>
+				<exclude>config/</exclude>
+				<exclude>config/*</exclude>
+				<exclude>log4j2.xml</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>WebContent/static</directory>
+			<outputDirectory>/static/</outputDirectory>
+		</fileSet>
+	</fileSets>
+	
+</assembly>
