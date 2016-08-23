@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.medi.ctrpdt.dao.CtrPdtDao">
+	<!-- 获取 数量-->
+	<select id="getCtrPdtCount" parameterType="map" resultType="int">
+		select count(id) from medi_ctr_pdt where 
+		<if test="ono!=null">and ono like '${ono}%'</if>
+		<if test="name!=null">and name like '%${name}%'</if>
+		    
+	</select>
+	<!-- 获取 -->
+	<select id="getCtrPdtList" parameterType="map" resultType="com.medi.ctrpdt.model.CtrPdt">
+		select
+		    id,
+		    name,
+		    molecular,
+		    remark
+		from medi_ctr_pdt where
+		<if test="id!=null">and id = #{id}</if>
+		<if test="name!=null">and name like '%${name}%'</if>
+		<if test="ono!=null">and ono like '${ono}%'</if>
+		<if test="start!=null"> limit ${start}, ${limit}</if>
+	</select>
+	<!-- 新增 -->
+	<insert id="addCtrPdt" parameterType="com.medi.ctrpdt.model.CtrPdt" useGeneratedKeys="true" keyProperty="id">
+		insert into medi_ctr_pdt
+		(
+			name,
+			molecular,
+			remark
+		)values
+		(
+			#{name},
+			#{molecular},
+			#{remark}
+		)
+	</insert>
+	<!-- 更改 -->
+	<update id="updateCtrPdt" parameterType="com.medi.ctrpdt.model.CtrPdt">
+		update medi_ctr_pdt
+		set    name = #{name},
+		    molecular = #{molecular},
+		    remark = #{remark}
+		where id = #{id}
+	</update>
+	<!-- 删除 -->
+	<delete id="delCtrPdt" parameterType="map">
+		delete from medi_ctr_pdt where id = #{id}
+	</delete>
+</mapper>
+
