@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.enjoyun.bmc.common.util.AppUtil;
 import com.enjoyun.bmc.common.util.WebUtil;
 import com.enjoyun.bmc.core.service.CoreService;
+import com.medi.ctrpdt.model.CtrPdt;
 import com.medi.ctrpdt.service.CtrPdtService;
 
 @Controller(value = "com.XXX.ctrl.CtrPdtCtrl")
@@ -31,11 +33,26 @@ public class CtrPdtCtrl {
 		@RequestParam(value = "limit", required = false) Integer limit
 	) {
 		try {
-			aCoreService.assertFunctionAuth("");
+			aCoreService.assertFunctionAuth("medi-ctr/ctrpdt/start");
 			if (ono == null) {
 				ono = aCoreService.getMyOno();
 			}
 			return WebUtil.getSuccessMap(ctrPdtService.getCtrPdtList(id, name, ono, start, limit), ctrPdtService.getCtrPdtCount(name, ono));
+		} catch(Exception e) {
+			return WebUtil.getFailureMap(e.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "create", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> list(
+		@RequestParam(value = "data", required = true) String data
+	) {
+		try {
+			aCoreService.assertFunctionAuth("medi-ctr/ctrpdt/create");
+			CtrPdt ctrPdt = AppUtil.toObject(data, CtrPdt.class);
+			ctrPdtService.addCtrPdt(ctrPdt);
+			return WebUtil.getSuccessMap();
 		} catch(Exception e) {
 			return WebUtil.getFailureMap(e.getMessage());
 		}
