@@ -706,3 +706,41 @@ CREATE TABLE `bmc_core_user_org` (
   `ono` varchar(32) NOT NULL,
   PRIMARY KEY (`uid`,`ono`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/**新增外部数据源功能**/
+-- ----------------------------
+-- Table structure for bmc_ext_ds
+-- ----------------------------
+DROP TABLE IF EXISTS `bmc_ext_ds`;
+CREATE TABLE `bmc_ext_ds` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dstype` varchar(20) DEFAULT NULL,
+  `dscode` varchar(20) DEFAULT NULL,
+  `dsname` varchar(64) DEFAULT NULL,
+  `srvaddr` varchar(64) DEFAULT NULL,
+  `srvport` int(11) DEFAULT NULL,
+  `srvlogin` varchar(30) DEFAULT NULL,
+  `srvpwd` varchar(30) DEFAULT NULL,
+  `dbname` varchar(30) DEFAULT NULL,
+  `vquery` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_extds_dscode` (`dscode`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+update bmc_core_app_module set view_ = 'bmc.dc.ext.view.MngExtDataSource', ctrllor = 'ExtDataSource' where amid = 'bmc-dc/ext';
+/**增加企业类型-私营企业基础数据**/
+INSERT INTO `bmc_com_dict_basic` VALUES (0, 'enterprise_type', '有限责任公司（自然人投资或控股）', 'syqy');
+/**增加部门属性基础数据**/
+INSERT INTO `bmc_com_dict` VALUES ('dept_prop', '部门属性', 'tree', NULL, 'bmc-core');
+/**新增组织表字段**/
+ALTER TABLE bmc_core_org_entity 
+				add addr varchar(50) DEFAULT NULL,
+				add legal_rep varchar(10) DEFAULT NULL,
+				add capital varchar(32) DEFAULT NULL,
+				add date_of_est datetime DEFAULT NULL,
+				add op_period int(11) DEFAULT NULL,
+				add bus_scope varchar(100) DEFAULT NULL,
+				add tex_no varchar(32) DEFAULT NULL,
+				add bank varchar(32) DEFAULT NULL,
+				add bank_account varchar(32) DEFAULT NULL,
+				add dept_prop varchar(10) DEFAULT NULL,
+				add social_code varchar(32) DEFAULT NULL;
