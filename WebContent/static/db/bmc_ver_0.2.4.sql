@@ -731,7 +731,7 @@ update bmc_core_app_module set view_ = 'bmc.dc.ext.view.MngExtDataSource', ctrll
 INSERT INTO `bmc_com_dict_basic` VALUES (0, 'enterprise_type', '有限责任公司（自然人投资或控股）', 'syqy');
 /**增加部门属性基础数据**/
 INSERT INTO `bmc_com_dict` VALUES ('dept_prop', '部门属性', 'tree', NULL, 'bmc-core');
-/**新增组织表字段**/
+/**新增组织表字段***/
 ALTER TABLE bmc_core_org_entity 
 				add addr varchar(50) DEFAULT NULL,
 				add legal_rep varchar(10) DEFAULT NULL,
